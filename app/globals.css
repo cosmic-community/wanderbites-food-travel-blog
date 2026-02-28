@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-cream-50 text-charcoal-800 antialiased;
+  }
+}
+
+@layer components {
+  .post-card-hover {
+    @apply transition-all duration-300 ease-in-out;
+  }
+  .post-card-hover:hover {
+    @apply -translate-y-1 shadow-xl;
+  }
+}
