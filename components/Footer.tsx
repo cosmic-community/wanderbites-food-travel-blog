@@ -35,6 +35,12 @@ export default function Footer() {
                   Our Writers
                 </Link>
               </li>
+              {/* Changed: Added Contact link to footer */}
+              <li>
+                <Link href="/contact" className="text-gray-300 hover:text-terracotta-400 transition-colors">
+                  Contact
+                </Link>
+              </li>
             </ul>
           </div>
           <div>
