@@ -1,4 +1,7 @@
 import Link from 'next/link';
+import SearchBar from '@/components/SearchBar';
+
+// Changed: Added SearchBar component to header navigation
 
 export default function Header() {
   return (
@@ -11,26 +14,30 @@ export default function Header() {
               Wanderbites
             </span>
           </Link>
-          <nav className="flex items-center gap-6 text-sm font-medium">
-            <Link
-              href="/"
-              className="text-charcoal-700 hover:text-terracotta-500 transition-colors"
-            >
-              Stories
-            </Link>
-            <Link
-              href="/#categories"
-              className="text-charcoal-700 hover:text-terracotta-500 transition-colors"
-            >
-              Cuisines
-            </Link>
-            <Link
-              href="/#authors"
-              className="text-charcoal-700 hover:text-terracotta-500 transition-colors"
-            >
-              Writers
-            </Link>
-          </nav>
+          <div className="flex items-center gap-4">
+            <nav className="hidden sm:flex items-center gap-6 text-sm font-medium">
+              <Link
+                href="/"
+                className="text-charcoal-700 hover:text-terracotta-500 transition-colors"
+              >
+                Stories
+              </Link>
+              <Link
+                href="/#categories"
+                className="text-charcoal-700 hover:text-terracotta-500 transition-colors"
+              >
+                Cuisines
+              </Link>
+              <Link
+                href="/#authors"
+                className="text-charcoal-700 hover:text-terracotta-500 transition-colors"
+              >
+                Writers
+              </Link>
+            </nav>
+            {/* Changed: Added real-time search bar to header */}
+            <SearchBar variant="header" />
+          </div>
         </div>
       </div>
     </header>

@@ -165,3 +165,59 @@ export async function getPostsByCategory(categoryId: string): Promise<BlogPost[]
     throw new Error('Failed to fetch posts by category');
   }
 }
+
+// Changed: Added searchPosts function for search feature
+export async function searchPosts(query: string): Promise<BlogPost[]> {
+  try {
+    const response = await cosmic.objects
+      .find({ type: 'blog-posts' })
+      .props(['id', 'title', 'slug', 'metadata'])
+      .depth(1);
+
+    const posts = response.objects as BlogPost[];
+    const lowerQuery = query.toLowerCase().trim();
+
+    if (!lowerQuery) {
+      return posts.sort((a, b) => {
+        const dateA = new Date(a.metadata.publication_date || '').getTime();
+        const dateB = new Date(b.metadata.publication_date || '').getTime();
+        return dateB - dateA;
+      });
+    }
+
+    // Client-side filtering across multiple fields for rich search
+    const filtered = posts.filter((post) => {
+      const title = post.title?.toLowerCase() || '';
+      const excerpt = post.metadata.excerpt?.toLowerCase() || '';
+      const city = post.metadata.city?.toLowerCase() || '';
+      const country = post.metadata.country?.toLowerCase() || '';
+      const content = post.metadata.content?.toLowerCase() || '';
+      const tags = (post.metadata.tags || []).map((t: string) => t.toLowerCase());
+      const categoryNames = (post.metadata.categories || [])
+        .map((c) => (c.metadata?.name || c.title || '').toLowerCase());
+      const authorName = (post.metadata.author?.metadata?.name || post.metadata.author?.title || '').toLowerCase();
+
+      return (
+        title.includes(lowerQuery) ||
+        excerpt.includes(lowerQuery) ||
+        city.includes(lowerQuery) ||
+        country.includes(lowerQuery) ||
+        content.includes(lowerQuery) ||
+        tags.some((t: string) => t.includes(lowerQuery)) ||
+        categoryNames.some((n: string) => n.includes(lowerQuery)) ||
+        authorName.includes(lowerQuery)
+      );
+    });
+
+    return filtered.sort((a, b) => {
+      const dateA = new Date(a.metadata.publication_date || '').getTime();
+      const dateB = new Date(b.metadata.publication_date || '').getTime();
+      return dateB - dateA;
+    });
+  } catch (error) {
+    if (hasStatus(error) && error.status === 404) {
+      return [];
+    }
+    throw new Error('Failed to search posts');
+  }
+}
