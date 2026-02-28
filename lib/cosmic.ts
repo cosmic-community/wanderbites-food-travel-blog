@@ -165,3 +165,38 @@ export async function getPostsByCategory(categoryId: string): Promise<BlogPost[]
     throw new Error('Failed to fetch posts by category');
   }
 }
+
+// Changed: Added searchPosts function for search feature
+export async function searchPosts(query?: string): Promise<BlogPost[]> {
+  try {
+    const findQuery: Record<string, unknown> = { type: 'blog-posts' };
+
+    // Changed: Use Cosmic search_text for text-based search
+    if (query && query.trim().length > 0) {
+      findQuery['$or'] = [
+        { title: { $regex: query, $options: 'i' } },
+        { 'metadata.excerpt': { $regex: query, $options: 'i' } },
+        { 'metadata.city': { $regex: query, $options: 'i' } },
+        { 'metadata.country': { $regex: query, $options: 'i' } },
+      ];
+    }
+
+    const response = await cosmic.objects
+      .find(findQuery)
+      .props(['id', 'title', 'slug', 'metadata'])
+      .depth(1);
+
+    const posts = response.objects as BlogPost[];
+
+    return posts.sort((a, b) => {
+      const dateA = new Date(a.metadata.publication_date || '').getTime();
+      const dateB = new Date(b.metadata.publication_date || '').getTime();
+      return dateB - dateA;
+    });
+  } catch (error) {
+    if (hasStatus(error) && error.status === 404) {
+      return [];
+    }
+    throw new Error('Failed to search posts');
+  }
+}
