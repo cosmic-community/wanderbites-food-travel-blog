@@ -30,6 +30,13 @@ export default function Header() {
             >
               Writers
             </Link>
+            {/* Changed: Added Contact nav link */}
+            <Link
+              href="/contact"
+              className="text-charcoal-700 hover:text-terracotta-500 transition-colors hidden sm:inline"
+            >
+              Contact
+            </Link>
             {/* Changed: Added search link to header navigation */}
             <Link
               href="/search"
